@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthPage from "./pages/auth";
 import RouteGuard from "./components/route-guard";
 import { useContext } from "react";
+import 'regenerator-runtime/runtime';
 import { AuthContext } from "./context/auth-context";
 import InstructorDashboardpage from "./pages/instructor";
 import StudentViewCommonLayout from "./components/student-view/common-layout";
