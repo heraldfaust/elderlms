@@ -70,17 +70,15 @@ export const courseLevelOptions = [
 ];
 
 export const courseCategories = [
-  { id: "web-development", label: "Web Development" },
-  { id: "backend-development", label: "Backend Development" },
-  { id: "data-science", label: "Data Science" },
-  { id: "machine-learning", label: "Machine Learning" },
-  { id: "artificial-intelligence", label: "Artificial Intelligence" },
-  { id: "cloud-computing", label: "Cloud Computing" },
-  { id: "cyber-security", label: "Cyber Security" },
-  { id: "mobile-development", label: "Mobile Development" },
-  { id: "game-development", label: "Game Development" },
-  { id: "software-engineering", label: "Software Engineering" },
+  { id: "basic-computer-skills", label: "Basic Computer Skills" },
+  { id: "online-safety-security", label: "Online Safety and Security" },
+  { id: "email-messaging", label: "Email and Messaging" },
+  { id: "social-media-video-calling", label: "Social Media and Video Calling" },
+  { id: "online-banking-finance", label: "Online Banking and Finance" },
+  { id: "health-wellness-resources", label: "Health and Wellness Resources" },
+  { id: "entertainment-hobbies", label: "Entertainment and Hobbies" },
 ];
+
 
 export const courseLandingPageFormControls = [
   {
