@@ -9,7 +9,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { signInFormControls, signUpFormControls } from "@/config";
 import { AuthContext } from "@/context/auth-context";
-import { GraduationCap } from "lucide-react";
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -24,8 +23,29 @@ function AuthPage() {
     handleLoginUser,
   } = useContext(AuthContext);
 
+  // Function to use SpeechSynthesis API
+  function speak(message) {
+    const synth = window.speechSynthesis;
+    if (!synth) return; // If SpeechSynthesis is unavailable
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = "en-US"; // Set the language
+    synth.speak(utterance);
+  }
+
   function handleTabChange(value) {
     setActiveTab(value);
+    speak(`You are about to ${value === "signin" ? "sign in" : "sign up"}.`);
+  }
+
+  function handleInputFocus(inputName) {
+    const messages = {
+      userEmail: "Enter your email address.",
+      password: "Enter your password.",
+      userName: "Enter your full name.",
+    };
+    if (messages[inputName]) {
+      speak(messages[inputName]);
+    }
   }
 
   function checkIfSignInFormIsValid() {
@@ -45,12 +65,14 @@ function AuthPage() {
     );
   }
 
-  console.log(signInFormData);
-
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-14 flex items-center">
-        <Link to={"/"} className="flex items-center justify-center">
+        <Link
+          to={"/"}
+          className="flex items-center justify-center"
+          onClick={() => speak("Navigating to the home page.")}
+        >
           <span className="font-extrabold text-xl">SLM</span>
         </Link>
       </header>
@@ -62,20 +84,37 @@ function AuthPage() {
           className="w-full max-w-md"
         >
           <TabsList className="grid w-full grid-cols-2 bg-black">
-            <TabsTrigger value="signin" className='text-white'>Sign In</TabsTrigger>
-            <TabsTrigger value="signup" className='text-white'>Sign Up</TabsTrigger>
+            <TabsTrigger
+              value="signin"
+              className="text-white"
+              onClick={() => speak("You selected the 'Sign In' tab.")}
+            >
+              Sign In
+            </TabsTrigger>
+            <TabsTrigger
+              value="signup"
+              className="text-white"
+              onClick={() => speak("You selected the 'Sign Up' tab.")}
+            >
+              Sign Up
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="signin">
             <Card className="p-6 space-y-4 bg-black dark">
               <CardHeader>
-                <CardTitle>Sign in to your account</CardTitle>
-                <CardDescription>
+                <CardTitle onClick={() => speak("Sign in to your account.")}>
+                  Sign in to your account
+                </CardTitle>
+                <CardDescription onClick={() => speak("Enter your email and password to access your account.")}>
                   Enter your email and password to access your account
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <CommonForm
-                  formControls={signInFormControls}
+                  formControls={signInFormControls.map((control) => ({
+                    ...control,
+                    onFocus: () => handleInputFocus(control.name),
+                  }))}
                   buttonText={"Sign In"}
                   formData={signInFormData}
                   setFormData={setSignInFormData}
@@ -88,14 +127,19 @@ function AuthPage() {
           <TabsContent value="signup">
             <Card className="p-6 space-y-4 bg-black dark">
               <CardHeader>
-                <CardTitle>Create a new account</CardTitle>
-                <CardDescription>
+                <CardTitle onClick={() => speak("Create a new account.")}>
+                  Create a new account
+                </CardTitle>
+                <CardDescription onClick={() => speak("Enter your details to get started.")}>
                   Enter your details to get started
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <CommonForm
-                  formControls={signUpFormControls}
+                  formControls={signUpFormControls.map((control) => ({
+                    ...control,
+                    onFocus: () => handleInputFocus(control.name),
+                  }))}
                   buttonText={"Sign Up"}
                   formData={signUpFormData}
                   setFormData={setSignUpFormData}

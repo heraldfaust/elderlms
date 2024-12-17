@@ -2,6 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { initialSignInFormData, initialSignUpFormData } from "@/config";
 import { checkAuthService, loginService, registerService } from "@/services";
 import { createContext, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 export const AuthContext = createContext(null);
 
@@ -16,32 +17,53 @@ export default function AuthProvider({ children }) {
 
   async function handleRegisterUser(event) {
     event.preventDefault();
-    const data = await registerService(signUpFormData);
+    try {
+      const data = await registerService(signUpFormData);
+      if (data.success) {
+        toast.success(data.message || "Registration successful!");
+      } else {
+        toast.error(data.message || "Registration failed.");
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "An error occurred during registration."
+      );
+    }
   }
 
   async function handleLoginUser(event) {
     event.preventDefault();
-    const data = await loginService(signInFormData);
-    console.log(data, "datadatadatadatadata");
+    try {
+      const data = await loginService(signInFormData);
+      console.log(data, "datadatadatadatadata");
 
-    if (data.success) {
-      sessionStorage.setItem(
-        "accessToken",
-        JSON.stringify(data.data.accessToken)
+      if (data.success) {
+        sessionStorage.setItem(
+          "accessToken",
+          JSON.stringify(data.data.accessToken)
+        );
+        setAuth({
+          authenticate: true,
+          user: data.data.user,
+        });
+        toast.success(data.message || "Login successful!");
+      } else {
+        setAuth({
+          authenticate: false,
+          user: null,
+        });
+        toast.error(data.message || "Invalid login credentials.");
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "An error occurred during login."
       );
-      setAuth({
-        authenticate: true,
-        user: data.data.user,
-      });
-    } else {
       setAuth({
         authenticate: false,
         user: null,
       });
     }
   }
-
-  //check auth user
 
   async function checkAuthUser() {
     try {
@@ -52,22 +74,25 @@ export default function AuthProvider({ children }) {
           user: data.data.user,
         });
         setLoading(false);
+        toast.success(data.message || "User authenticated!");
       } else {
         setAuth({
           authenticate: false,
           user: null,
         });
         setLoading(false);
+        toast.error(data.message || "User is not authenticated.");
       }
     } catch (error) {
       console.log(error);
-      if (!error?.response?.data?.success) {
-        setAuth({
-          authenticate: false,
-          user: null,
-        });
-        setLoading(false);
-      }
+      toast.error(
+        error?.response?.data?.message || "Failed to verify authentication."
+      );
+      setAuth({
+        authenticate: false,
+        user: null,
+      });
+      setLoading(false);
     }
   }
 
@@ -76,6 +101,7 @@ export default function AuthProvider({ children }) {
       authenticate: false,
       user: null,
     });
+    toast.success("User credentials reset.");
   }
 
   useEffect(() => {

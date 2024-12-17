@@ -10,9 +10,18 @@ import {
 import { Textarea } from "../ui/textarea";
 
 function FormControls({ formControls = [], formData, setFormData }) {
+  // Function to handle speech synthesis
+  function speakMessage(message) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(message);
+    synth.speak(utterance);
+  }
+
   function renderComponentByType(getControlItem) {
     let element = null;
     const currentControlItemValue = formData[getControlItem.name] || "";
+
+    const onFocusMessage = getControlItem.onFocusMessage || "Please fill this field.";
 
     switch (getControlItem.componentType) {
       case "input":
@@ -23,6 +32,7 @@ function FormControls({ formControls = [], formData, setFormData }) {
             placeholder={getControlItem.placeholder}
             type={getControlItem.type}
             value={currentControlItemValue}
+            onFocus={() => speakMessage(onFocusMessage)}
             onChange={(event) =>
               setFormData({
                 ...formData,
@@ -42,6 +52,7 @@ function FormControls({ formControls = [], formData, setFormData }) {
               })
             }
             value={currentControlItemValue}
+            onFocus={() => speakMessage(onFocusMessage)}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={getControlItem.label} />
@@ -65,6 +76,7 @@ function FormControls({ formControls = [], formData, setFormData }) {
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
             value={currentControlItemValue}
+            onFocus={() => speakMessage(onFocusMessage)}
             onChange={(event) =>
               setFormData({
                 ...formData,
@@ -83,6 +95,7 @@ function FormControls({ formControls = [], formData, setFormData }) {
             placeholder={getControlItem.placeholder}
             type={getControlItem.type}
             value={currentControlItemValue}
+            onFocus={() => speakMessage(onFocusMessage)}
             onChange={(event) =>
               setFormData({
                 ...formData,
@@ -99,10 +112,10 @@ function FormControls({ formControls = [], formData, setFormData }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {formControls.map((controleItem) => (
-        <div key={controleItem.name}>
-          <Label htmlFor={controleItem.name}>{controleItem.label}</Label>
-          {renderComponentByType(controleItem)}
+      {formControls.map((controlItem) => (
+        <div key={controlItem.name}>
+          <Label htmlFor={controlItem.name}>{controlItem.label}</Label>
+          {renderComponentByType(controlItem)}
         </div>
       ))}
     </div>
