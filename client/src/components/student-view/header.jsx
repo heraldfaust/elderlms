@@ -19,10 +19,10 @@ function StudentViewCommonHeader() {
         <Link to="/home" className="flex items-center hover:text-black">
          
           <span className="font-extrabold md:text-xl text-[14px]" voice='logo'>
-            LEARN
+            SLM
           </span>
         </Link>
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1 dark">
           <Button
             variant="ghost"
             onClick={() => {
