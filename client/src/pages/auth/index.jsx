@@ -51,7 +51,7 @@ function AuthPage() {
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-14 flex items-center">
         <Link to={"/"} className="flex items-center justify-center">
-          <span className="font-extrabold text-xl">LEARN</span>
+          <span className="font-extrabold text-xl">SLM</span>
         </Link>
       </header>
       <div className="flex items-center justify-center min-h-screen bg-background">
