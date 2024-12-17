@@ -25,8 +25,17 @@ export default function AuthProvider({ children }) {
     event.preventDefault();
     try {
       const data = await registerService(signUpFormData);
+  
       if (data.success) {
         const successMessage = data.message || "Registration successful!";
+        sessionStorage.setItem(
+          "accessToken",
+          JSON.stringify(data.data.accessToken)
+        );
+        setAuth({
+          authenticate: true,
+          user: data.data.user,
+        });
         toast.success(successMessage);
         speakMessage(successMessage);
       } else {
@@ -41,6 +50,7 @@ export default function AuthProvider({ children }) {
       speakMessage(errorMessage);
     }
   }
+  
 
   async function handleLoginUser(event) {
     event.preventDefault();
