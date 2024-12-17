@@ -20,6 +20,7 @@ import {
 import { CheckCircle, Globe, Lock, PlayCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
 
 function StudentViewCourseDetailsPage() {
   const {
@@ -36,26 +37,11 @@ function StudentViewCourseDetailsPage() {
   const [displayCurrentVideoFreePreview, setDisplayCurrentVideoFreePreview] =
     useState(null);
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
-  const [approvalUrl, setApprovalUrl] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
 
   async function fetchStudentViewCourseDetails() {
-    // const checkCoursePurchaseInfoResponse =
-    //   await checkCoursePurchaseInfoService(
-    //     currentCourseDetailsId,
-    //     auth?.user._id
-    //   );
-
-    // if (
-    //   checkCoursePurchaseInfoResponse?.success &&
-    //   checkCoursePurchaseInfoResponse?.data
-    // ) {
-    //   navigate(`/course-progress/${currentCourseDetailsId}`);
-    //   return;
-    // }
-
     const response = await fetchStudentViewCourseDetailsService(
       currentCourseDetailsId
     );
@@ -74,36 +60,54 @@ function StudentViewCourseDetailsPage() {
     setDisplayCurrentVideoFreePreview(getCurrentVideoInfo?.videoUrl);
   }
 
-  async function handleCreatePayment() {
-    const paymentPayload = {
-      userId: auth?.user?._id,
-      userName: auth?.user?.userName,
-      userEmail: auth?.user?.userEmail,
-      orderStatus: "pending",
-      paymentMethod: "paypal",
-      paymentStatus: "initiated",
-      orderDate: new Date(),
-      paymentId: "",
-      payerId: "",
-      instructorId: studentViewCourseDetails?.instructorId,
-      instructorName: studentViewCourseDetails?.instructorName,
-      courseImage: studentViewCourseDetails?.image,
-      courseTitle: studentViewCourseDetails?.title,
-      courseId: studentViewCourseDetails?._id,
-      coursePricing: studentViewCourseDetails?.pricing,
-    };
+  const config = {
+    public_key: import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY, // Replace with your Flutterwave public key
+    tx_ref: `course-purchase-${Date.now()}`,
+    amount: studentViewCourseDetails?.pricing || 0,
+    currency: 'NGN',
+    customer: {
+      email: auth?.user?.userEmail || '',
+      name: `${auth?.user?.userName || ''}`,
+    },
+    customizations: {
+      title: 'Course Purchase',
+      description: studentViewCourseDetails?.title || 'Course Purchase',
+      logo: studentViewCourseDetails?.image || 'https://your-logo-url.com',
+    },
+  };
 
-    console.log(paymentPayload, "paymentPayload");
-    const response = await createPaymentService(paymentPayload);
+  const handleFlutterPayment = async (response) => {
+    console.log(response);
+    if (response.status === 'completed') {
+      // Prepare payment payload
+      const paymentPayload = {
+        userId: auth?.user?._id,
+        userName: auth?.user?.userName,
+        userEmail: auth?.user?.userEmail,
+        orderStatus: "confirmed",
+        paymentMethod: "flutterwave",
+        paymentStatus: "paid",
+        orderDate: new Date(),
+        transactionId: response.transaction_id,
+        instructorId: studentViewCourseDetails?.instructorId,
+        instructorName: studentViewCourseDetails?.instructorName,
+        courseImage: studentViewCourseDetails?.image,
+        courseTitle: studentViewCourseDetails?.title,
+        courseId: studentViewCourseDetails?._id,
+        coursePricing: studentViewCourseDetails?.pricing,
+      };
 
-    if (response.success) {
-      sessionStorage.setItem(
-        "currentOrderId",
-        JSON.stringify(response?.data?.orderId)
-      );
-      setApprovalUrl(response?.data?.approveUrl);
+      // Call backend to verify and complete the purchase
+      const verifyResponse = await createPaymentService(paymentPayload);
+
+      if (verifyResponse.success) {
+        // Redirect to course progress or show success message
+        navigate(`/course-progress/${currentCourseDetailsId}`);
+      }
     }
-  }
+
+    closePaymentModal(); // Close the Flutterwave modal
+  };
 
   useEffect(() => {
     if (displayCurrentVideoFreePreview !== null) setShowFreePreviewDialog(true);
@@ -120,15 +124,10 @@ function StudentViewCourseDetailsPage() {
   useEffect(() => {
     if (!location.pathname.includes("course/details"))
       setStudentViewCourseDetails(null),
-        setCurrentCourseDetailsId(null),
-        setCoursePurchaseId(null);
+        setCurrentCourseDetailsId(null);
   }, [location.pathname]);
 
   if (loadingState) return <Skeleton />;
-
-  if (approvalUrl !== "") {
-    window.location.href = approvalUrl;
-  }
 
   const getIndexOfFreePreviewUrl =
     studentViewCourseDetails !== null
@@ -138,7 +137,7 @@ function StudentViewCourseDetailsPage() {
       : -1;
 
   return (
-    <div className=" mx-auto p-4 bg-[#F5F5DC]">
+    <div className="mx-auto p-4 bg-[#F5F5DC]">
       <div className="bg-gray-900 text-white p-8 rounded-t-lg">
         <h1 className="text-3xl font-bold mb-4">
           {studentViewCourseDetails?.title}
@@ -192,6 +191,7 @@ function StudentViewCourseDetailsPage() {
               {studentViewCourseDetails?.curriculum?.map(
                 (curriculumItem, index) => (
                   <li
+                    key={index}
                     className={`${
                       curriculumItem?.freePreview
                         ? "cursor-pointer"
@@ -236,9 +236,15 @@ function StudentViewCourseDetailsPage() {
                   ${studentViewCourseDetails?.pricing}
                 </span>
               </div>
-              <Button onClick={handleCreatePayment} className="w-full">
-                Buy Now
-              </Button>
+              <FlutterWaveButton
+                className="w-full"
+                {...config}
+                text="Buy Now"
+                callback={handleFlutterPayment}
+                onClose={() => {
+                  // Optional: Handle modal close
+                }}
+              />
             </CardContent>
           </Card>
         </aside>
@@ -264,8 +270,9 @@ function StudentViewCourseDetailsPage() {
           <div className="flex flex-col gap-2">
             {studentViewCourseDetails?.curriculum
               ?.filter((item) => item.freePreview)
-              .map((filteredItem) => (
+              .map((filteredItem, index) => (
                 <p
+                  key={index}
                   onClick={() => handleSetFreePreview(filteredItem)}
                   className="cursor-pointer text-[16px] font-medium"
                 >

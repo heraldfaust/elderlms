@@ -126,8 +126,8 @@ function StudentViewCourseProgressPage() {
         <div className="flex items-center space-x-4">
           <Button
             onClick={() => navigate("/student-courses")}
-            className="text-black"
-            variant="ghost"
+            className="text-black bg-[#ffffc2] hover:bg-[#ffffc2] hover:text-black"
+          
             size="sm"
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
@@ -171,13 +171,13 @@ function StudentViewCourseProgressPage() {
             <TabsList className="grid bg-[#1c1d1f] w-full grid-cols-2 p-0 h-14">
               <TabsTrigger
                 value="content"
-                className=" text-black rounded-none h-full"
+                className=" text-white rounded-none h-full"
               >
                 Course Content
               </TabsTrigger>
               <TabsTrigger
                 value="overview"
-                className=" text-black rounded-none h-full"
+                className=" text-white rounded-none h-full"
               >
                 Overview
               </TabsTrigger>
@@ -209,7 +209,7 @@ function StudentViewCourseProgressPage() {
               <ScrollArea className="h-full">
                 <div className="p-4">
                   <h2 className="text-xl font-bold mb-4">About this course</h2>
-                  <p className="text-gray-400">
+                  <p className="text-gray-200">
                     {studentCurrentCourseProgress?.courseDetails?.description}
                   </p>
                 </div>

@@ -1,4 +1,4 @@
-const paypal = require("../../helpers/paypal");
+const crypto = require('crypto');
 const Order = require("../../models/Order");
 const Course = require("../../models/Course");
 const StudentCourses = require("../../models/StudentCourses");
@@ -13,8 +13,7 @@ const createOrder = async (req, res) => {
       paymentMethod,
       paymentStatus,
       orderDate,
-      paymentId,
-      payerId,
+      transactionId,
       instructorId,
       instructorName,
       courseImage,
@@ -23,165 +22,131 @@ const createOrder = async (req, res) => {
       coursePricing,
     } = req.body;
 
-    const create_payment_json = {
-      intent: "sale",
-      payer: {
-        payment_method: "paypal",
-      },
-      redirect_urls: {
-        return_url: `${process.env.CLIENT_URL}/payment-return`,
-        cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
-      },
-      transactions: [
-        {
-          item_list: {
-            items: [
-              {
-                name: courseTitle,
-                sku: courseId,
-                price: coursePricing,
-                currency: "USD",
-                quantity: 1,
-              },
-            ],
-          },
-          amount: {
-            currency: "USD",
-            total: coursePricing.toFixed(2),
-          },
-          description: courseTitle,
-        },
-      ],
+    // Manually verify the transaction with Flutterwave
+    const verifyTransaction = async (transactionId) => {
+      const url = `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to verify transaction');
+      }
+
+      return await response.json();
     };
 
-    paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).json({
-          success: false,
-          message: "Error while creating paypal payment!",
-        });
+    // Verify the transaction
+    const verificationResponse = await verifyTransaction(transactionId);
+
+    // Check if the transaction was successful
+    if (
+      verificationResponse.status === 'success' && 
+      verificationResponse.data.status === 'successful' &&
+      parseFloat(verificationResponse.data.amount) === parseFloat(coursePricing) &&
+      verificationResponse.data.currency === 'NGN'
+    ) {
+      // Create a new order
+      const newlyCreatedCourseOrder = new Order({
+        userId,
+        userName,
+        userEmail,
+        orderStatus: 'confirmed',
+        paymentMethod: 'flutterwave',
+        paymentStatus: 'paid',
+        orderDate,
+        paymentId: transactionId,
+        instructorId,
+        instructorName,
+        courseImage,
+        courseTitle,
+        courseId,
+        coursePricing,
+      });
+
+      await newlyCreatedCourseOrder.save();
+
+      // Update student courses
+      const studentCourses = await StudentCourses.findOne({
+        userId: newlyCreatedCourseOrder.userId,
+      });
+
+      if (studentCourses) {
+        // Check if course already exists in student's courses
+        const courseExists = studentCourses.courses.some(
+          course => course.courseId.toString() === courseId
+        );
+
+        if (!courseExists) {
+          studentCourses.courses.push({
+            courseId: newlyCreatedCourseOrder.courseId,
+            title: newlyCreatedCourseOrder.courseTitle,
+            instructorId: newlyCreatedCourseOrder.instructorId,
+            instructorName: newlyCreatedCourseOrder.instructorName,
+            dateOfPurchase: newlyCreatedCourseOrder.orderDate,
+            courseImage: newlyCreatedCourseOrder.courseImage,
+          });
+
+          await studentCourses.save();
+        }
       } else {
-        const newlyCreatedCourseOrder = new Order({
-          userId,
-          userName,
-          userEmail,
-          orderStatus,
-          paymentMethod,
-          paymentStatus,
-          orderDate,
-          paymentId,
-          payerId,
-          instructorId,
-          instructorName,
-          courseImage,
-          courseTitle,
-          courseId,
-          coursePricing,
+        const newStudentCourses = new StudentCourses({
+          userId: newlyCreatedCourseOrder.userId,
+          courses: [
+            {
+              courseId: newlyCreatedCourseOrder.courseId,
+              title: newlyCreatedCourseOrder.courseTitle,
+              instructorId: newlyCreatedCourseOrder.instructorId,
+              instructorName: newlyCreatedCourseOrder.instructorName,
+              dateOfPurchase: newlyCreatedCourseOrder.orderDate,
+              courseImage: newlyCreatedCourseOrder.courseImage,
+            },
+          ],
         });
 
-        await newlyCreatedCourseOrder.save();
-
-        const approveUrl = paymentInfo.links.find(
-          (link) => link.rel == "approval_url"
-        ).href;
-
-        res.status(201).json({
-          success: true,
-          data: {
-            approveUrl,
-            orderId: newlyCreatedCourseOrder._id,
-          },
-        });
+        await newStudentCourses.save();
       }
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: "Some error occured!",
-    });
-  }
-};
 
-const capturePaymentAndFinalizeOrder = async (req, res) => {
-  try {
-    const { paymentId, payerId, orderId } = req.body;
-
-    let order = await Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order can not be found",
-      });
-    }
-
-    order.paymentStatus = "paid";
-    order.orderStatus = "confirmed";
-    order.paymentId = paymentId;
-    order.payerId = payerId;
-
-    await order.save();
-
-    //update out student course model
-    const studentCourses = await StudentCourses.findOne({
-      userId: order.userId,
-    });
-
-    if (studentCourses) {
-      studentCourses.courses.push({
-        courseId: order.courseId,
-        title: order.courseTitle,
-        instructorId: order.instructorId,
-        instructorName: order.instructorName,
-        dateOfPurchase: order.orderDate,
-        courseImage: order.courseImage,
-      });
-
-      await studentCourses.save();
-    } else {
-      const newStudentCourses = new StudentCourses({
-        userId: order.userId,
-        courses: [
-          {
-            courseId: order.courseId,
-            title: order.courseTitle,
-            instructorId: order.instructorId,
-            instructorName: order.instructorName,
-            dateOfPurchase: order.orderDate,
-            courseImage: order.courseImage,
+      // Update the course schema students
+      await Course.findByIdAndUpdate(newlyCreatedCourseOrder.courseId, {
+        $addToSet: {
+          students: {
+            studentId: newlyCreatedCourseOrder.userId,
+            studentName: newlyCreatedCourseOrder.userName,
+            studentEmail: newlyCreatedCourseOrder.userEmail,
+            paidAmount: newlyCreatedCourseOrder.coursePricing,
           },
-        ],
+        },
       });
 
-      await newStudentCourses.save();
+      return res.status(200).json({
+        success: true,
+        message: "Order confirmed and course purchased successfully",
+        data: newlyCreatedCourseOrder,
+      });
+    } else {
+      // Payment verification failed
+      return res.status(400).json({
+        success: false,
+        message: "Payment verification failed",
+      });
     }
-
-    //update the course schema students
-    await Course.findByIdAndUpdate(order.courseId, {
-      $addToSet: {
-        students: {
-          studentId: order.userId,
-          studentName: order.userName,
-          studentEmail: order.userEmail,
-          paidAmount: order.coursePricing,
-        },
-      },
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Order confirmed",
-      data: order,
-    });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
+    console.error('Error in createOrder:', err);
+
+    return res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "An error occurred while processing the payment",
+      error: err.message,
     });
   }
 };
 
-module.exports = { createOrder, capturePaymentAndFinalizeOrder };
+module.exports = { 
+  createOrder
+};
