@@ -126,7 +126,7 @@ function StudentViewCoursesPage() {
   console.log(loadingState, "loadingState");
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 bg-[#F5F5DC]">
       <h1 className="text-3xl font-bold mb-4">All Courses</h1>
       <div className="flex flex-col md:flex-row gap-4">
         <aside className="w-full md:w-64 space-y-4">
@@ -157,13 +157,13 @@ function StudentViewCoursesPage() {
           </div>
         </aside>
         <main className="flex-1">
-          <div className="flex justify-end items-center mb-4 gap-5">
+          <div className="flex justify-end items-center mb-4 gap-5 dark">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-2 p-5"
+                  className="flex items-center gap-2 p-5 text-white "
                 >
                   <ArrowUpDownIcon className="h-4 w-4" />
                   <span className="text-[16px] font-medium">Sort By</span>
@@ -194,7 +194,7 @@ function StudentViewCoursesPage() {
               studentViewCoursesList.map((courseItem) => (
                 <Card
                   onClick={() => handleCourseNavigate(courseItem?._id)}
-                  className="cursor-pointer"
+                  className="cursor-pointer bg-[#ffffc2]"
                   key={courseItem?._id}
                 >
                   <CardContent className="flex gap-4 p-4">
@@ -208,13 +208,13 @@ function StudentViewCoursesPage() {
                       <CardTitle className="text-xl mb-2">
                         {courseItem?.title}
                       </CardTitle>
-                      <p className="text-sm text-gray-600 mb-1">
+                      <p className="text-sm text-black mb-1">
                         Created By{" "}
                         <span className="font-bold">
                           {courseItem?.instructorName}
                         </span>
                       </p>
-                      <p className="text-[16px] text-gray-600 mt-3 mb-2">
+                      <p className="text-[16px] text-black mt-3 mb-2">
                         {`${courseItem?.curriculum?.length} ${
                           courseItem?.curriculum?.length <= 1
                             ? "Lecture"
@@ -222,7 +222,7 @@ function StudentViewCoursesPage() {
                         } - ${courseItem?.level.toUpperCase()} Level`}
                       </p>
                       <p className="font-bold text-lg">
-                        ${courseItem?.pricing}
+                        NGN {courseItem?.pricing}
                       </p>
                     </div>
                   </CardContent>

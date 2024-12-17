@@ -102,7 +102,7 @@ function StudentHomePage() {
             studentViewCoursesList.map((courseItem) => (
               <div
                 onClick={() => handleCourseNavigate(courseItem?._id, courseItem?.title)}
-                className="border rounded-lg overflow-hidden bg-black text-white cursor-pointer"
+                className="shadow rounded-lg overflow-hidden bg-[#ffffc2] text-black cursor-pointer"
                 key={courseItem?._id}
               >
                 <img
@@ -114,7 +114,7 @@ function StudentHomePage() {
                 />
                 <div className="p-4">
                   <h3 className="font-bold mb-2">{courseItem?.title}</h3>
-                  <p className="text-sm text-gray-300 mb-2">
+                  <p className="text-sm text-black mb-2">
                     {courseItem?.instructorName}
                   </p>
                   <p className="font-bold text-[16px]">

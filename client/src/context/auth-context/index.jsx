@@ -15,19 +15,30 @@ export default function AuthProvider({ children }) {
   });
   const [loading, setLoading] = useState(true);
 
+  function speakMessage(message) {
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = "en-US"; // Set language to English (US)
+    window.speechSynthesis.speak(utterance);
+  }
+
   async function handleRegisterUser(event) {
     event.preventDefault();
     try {
       const data = await registerService(signUpFormData);
       if (data.success) {
-        toast.success(data.message || "Registration successful!");
+        const successMessage = data.message || "Registration successful!";
+        toast.success(successMessage);
+        speakMessage(successMessage);
       } else {
-        toast.error(data.message || "Registration failed.");
+        const errorMessage = data.message || "Registration failed.";
+        toast.error(errorMessage);
+        speakMessage(errorMessage);
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "An error occurred during registration."
-      );
+      const errorMessage =
+        error?.response?.data?.message || "An error occurred during registration.";
+      toast.error(errorMessage);
+      speakMessage(errorMessage);
     }
   }
 
@@ -38,6 +49,7 @@ export default function AuthProvider({ children }) {
       console.log(data, "datadatadatadatadata");
 
       if (data.success) {
+        const successMessage = data.message || "Login successful!";
         sessionStorage.setItem(
           "accessToken",
           JSON.stringify(data.data.accessToken)
@@ -46,18 +58,22 @@ export default function AuthProvider({ children }) {
           authenticate: true,
           user: data.data.user,
         });
-        toast.success(data.message || "Login successful!");
+        toast.success(successMessage);
+        speakMessage(successMessage);
       } else {
+        const errorMessage = data.message || "Invalid login credentials.";
         setAuth({
           authenticate: false,
           user: null,
         });
-        toast.error(data.message || "Invalid login credentials.");
+        toast.error(errorMessage);
+        speakMessage(errorMessage);
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "An error occurred during login."
-      );
+      const errorMessage =
+        error?.response?.data?.message || "An error occurred during login.";
+      toast.error(errorMessage);
+      speakMessage(errorMessage);
       setAuth({
         authenticate: false,
         user: null,
@@ -69,25 +85,29 @@ export default function AuthProvider({ children }) {
     try {
       const data = await checkAuthService();
       if (data.success) {
+        const successMessage = data.message || "User authenticated!";
         setAuth({
           authenticate: true,
           user: data.data.user,
         });
         setLoading(false);
-        toast.success(data.message || "User authenticated!");
+        toast.success(successMessage);
+        speakMessage(successMessage);
       } else {
+        const errorMessage = data.message || "User is not authenticated.";
         setAuth({
           authenticate: false,
           user: null,
         });
         setLoading(false);
-        toast.error(data.message || "User is not authenticated.");
+        toast.error(errorMessage);
+        speakMessage(errorMessage);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message || "Failed to verify authentication."
-      );
+      const errorMessage =
+        error?.response?.data?.message || "Failed to verify authentication.";
+      toast.error(errorMessage);
+      speakMessage(errorMessage);
       setAuth({
         authenticate: false,
         user: null,
@@ -102,6 +122,7 @@ export default function AuthProvider({ children }) {
       user: null,
     });
     toast.success("User credentials reset.");
+    speakMessage("User credentials reset.");
   }
 
   useEffect(() => {

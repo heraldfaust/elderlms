@@ -138,7 +138,7 @@ function StudentViewCourseDetailsPage() {
       : -1;
 
   return (
-    <div className=" mx-auto p-4">
+    <div className=" mx-auto p-4 bg-[#F5F5DC]">
       <div className="bg-gray-900 text-white p-8 rounded-t-lg">
         <h1 className="text-3xl font-bold mb-4">
           {studentViewCourseDetails?.title}
@@ -159,9 +159,9 @@ function StudentViewCourseDetailsPage() {
           </span>
         </div>
       </div>
-      <div className="flex flex-col md:flex-row gap-8 mt-8">
+      <div className="flex flex-col md:flex-row gap-8 mt-8 ">
         <main className="flex-grow">
-          <Card className="mb-8">
+          <Card className="mb-8 bg-[#ffffc2]">
             <CardHeader>
               <CardTitle>What you'll learn</CardTitle>
             </CardHeader>
@@ -178,13 +178,13 @@ function StudentViewCourseDetailsPage() {
               </ul>
             </CardContent>
           </Card>
-          <Card className="mb-8">
+          <Card className="mb-8 bg-[#ffffc2]">
             <CardHeader>
               <CardTitle>Course Description</CardTitle>
             </CardHeader>
             <CardContent>{studentViewCourseDetails?.description}</CardContent>
           </Card>
-          <Card className="mb-8">
+          <Card className="mb-8 bg-[#ffffc2]">
             <CardHeader>
               <CardTitle>Course Curriculum</CardTitle>
             </CardHeader>
@@ -216,7 +216,7 @@ function StudentViewCourseDetailsPage() {
           </Card>
         </main>
         <aside className="w-full md:w-[500px]">
-          <Card className="sticky top-4">
+          <Card className="sticky top-4 bg-[#ffffc2]">
             <CardContent className="p-6">
               <div className="aspect-video mb-4 rounded-lg flex items-center justify-center">
                 <VideoPlayer
