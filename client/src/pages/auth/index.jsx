@@ -49,10 +49,9 @@ function AuthPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b">
+      <header className="px-4 lg:px-6 h-14 flex items-center">
         <Link to={"/"} className="flex items-center justify-center">
-          <GraduationCap className="h-8 w-8 mr-4" />
-          <span className="font-extrabold text-xl">LMS LEARN</span>
+          <span className="font-extrabold text-xl">LEARN</span>
         </Link>
       </header>
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -62,12 +61,12 @@ function AuthPage() {
           onValueChange={handleTabChange}
           className="w-full max-w-md"
         >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-black">
+            <TabsTrigger value="signin" className='text-white'>Sign In</TabsTrigger>
+            <TabsTrigger value="signup" className='text-white'>Sign Up</TabsTrigger>
           </TabsList>
           <TabsContent value="signin">
-            <Card className="p-6 space-y-4">
+            <Card className="p-6 space-y-4 bg-black dark">
               <CardHeader>
                 <CardTitle>Sign in to your account</CardTitle>
                 <CardDescription>
@@ -87,7 +86,7 @@ function AuthPage() {
             </Card>
           </TabsContent>
           <TabsContent value="signup">
-            <Card className="p-6 space-y-4">
+            <Card className="p-6 space-y-4 bg-black dark">
               <CardHeader>
                 <CardTitle>Create a new account</CardTitle>
                 <CardDescription>

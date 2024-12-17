@@ -64,7 +64,7 @@ function StudentHomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F5F5DC]">
       <section className="flex flex-col lg:flex-row items-center justify-between py-8 px-4 lg:px-8">
         <div className="lg:w-2/2 lg:pr-12">
           <h1 className="text-4xl font-bold mb-4" voice='Empowering Seniors with Digital Confidence'>Empowering Seniors with Digital Confidence</h1>
@@ -80,12 +80,12 @@ function StudentHomePage() {
           />
         </div>
       </section>
-      <section className="py-8 px-4 lg:px-8 bg-gray-100">
+      <section className="py-8 px-4 lg:px-8 bg-[#F5F5DC]">
         <h2 className="text-2xl font-bold mb-6" voice='Course categories'>Course Categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {courseCategories.map((categoryItem) => (
             <Button
-              className="justify-start"
+              className="justify-start hover:bg-black hover:text-[#F5F5DC]"
               variant="outline"
               key={categoryItem.id}
               onClick={() => handleNavigateToCoursesPage(categoryItem.id, categoryItem.label)}
