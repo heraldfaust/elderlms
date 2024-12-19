@@ -14,23 +14,34 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
+// Log the incoming origin for debugging
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  console.log("Allowed Origin:", process.env.CLIENT_URL);
+  next();
+});
+
+// CORS configuration
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "DELETE", "PUT"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
   })
 );
 
+// Handle preflight requests
+app.options("*", cors());
+
 app.use(express.json());
 
-//database connection
+// Database connection
 mongoose
   .connect(MONGO_URI)
-  .then(() => console.log("mongodb is connected"))
-  .catch((e) => console.log(e));
+  .then(() => console.log("MongoDB is connected"))
+  .catch((e) => console.error("Database connection error:", e));
 
-//routes configuration
+// Routes configuration
 app.use("/auth", authRoutes);
 app.use("/media", mediaRoutes);
 app.use("/instructor/course", instructorCourseRoutes);
@@ -39,14 +50,16 @@ app.use("/student/order", studentViewOrderRoutes);
 app.use("/student/courses-bought", studentCoursesRoutes);
 app.use("/student/course-progress", studentCourseProgressRoutes);
 
+// Global error handling middleware
 app.use((err, req, res, next) => {
-  console.log(err.stack);
+  console.error("Error stack:", err.stack);
   res.status(500).json({
     success: false,
     message: "Something went wrong",
   });
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is now running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
