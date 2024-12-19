@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "elderlms-rb6x.vercel.app",
+  baseURL: "https://elderlms-rb6x.vercel.app",
 });
 
 axiosInstance.interceptors.request.use(
