@@ -138,7 +138,7 @@ function StudentViewCourseDetailsPage() {
 
   return (
     <div className="mx-auto p-4 bg-[#F5F5DC]">
-      <div className="bg-gray-900 text-white p-8 rounded-t-lg">
+      <div className="bg-black text-white p-8 rounded-t-lg">
         <h1 className="text-3xl font-bold mb-4">
           {studentViewCourseDetails?.title}
         </h1>
@@ -233,11 +233,11 @@ function StudentViewCourseDetailsPage() {
               </div>
               <div className="mb-4">
                 <span className="text-3xl font-bold">
-                  ${studentViewCourseDetails?.pricing}
+                  NGN {studentViewCourseDetails?.pricing}
                 </span>
               </div>
               <FlutterWaveButton
-                className="w-full"
+                className="w-full bg-black py-5 text-white"
                 {...config}
                 text="Buy Now"
                 callback={handleFlutterPayment}

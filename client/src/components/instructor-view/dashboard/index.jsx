@@ -50,7 +50,7 @@ function InstructorDashboard({ listOfCourses }) {
       value: calculateTotalStudentsAndProfit().totalStudents,
     },
     {
-      icon: DollarSign,
+      icon: "NGN",
       label: "Total Revenue",
       value: calculateTotalStudentsAndProfit().totalProfit,
     },
