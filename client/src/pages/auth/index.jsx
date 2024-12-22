@@ -25,11 +25,18 @@ function AuthPage() {
 
   // Function to use SpeechSynthesis API
   function speak(message) {
-    const synth = window.speechSynthesis;
-    if (!synth) return; // If SpeechSynthesis is unavailable
-    const utterance = new SpeechSynthesisUtterance(message);
-    utterance.lang = "en-US"; // Set the language
-    synth.speak(utterance);
+    if (window.FlutterTTS) {
+      // Send message to Flutter
+      window.FlutterTTS.postMessage(message);
+    } else if (window.speechSynthesis) {
+      // Fallback for environments that support SpeechSynthesis
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.lang = "en-US";
+      synth.speak(utterance);
+    } else {
+      console.warn("Text-to-Speech is not supported in this environment.");
+    }
   }
 
   function handleTabChange(value) {
