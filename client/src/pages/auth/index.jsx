@@ -25,6 +25,7 @@ function AuthPage() {
 
   // Function to use SpeechSynthesis API
   function speak(message) {
+    console.log("New work")
     if (window.FlutterTTS) {
       // Send message to Flutter
       window.FlutterTTS.postMessage(message);
