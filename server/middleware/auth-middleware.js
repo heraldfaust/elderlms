@@ -9,7 +9,7 @@ const authenticate = (req, res, next) => {
   console.log(authHeader, "authHeader");
 
   if (!authHeader) {
-    return res.status(401).json({
+    return res.json({
       success: false,
       message: "User is not authenticated",
     });
@@ -24,9 +24,9 @@ const authenticate = (req, res, next) => {
 
     next();
   } catch (e) {
-    return res.status(401).json({
+    return res.json({
       success: false,
-      message: "invalid token",
+      message: "Invalid token",
     });
   }
 };
