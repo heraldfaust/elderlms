@@ -16,16 +16,22 @@ export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   function speakMessage(message) {
-    const utterance = new SpeechSynthesisUtterance(message);
-    utterance.lang = "en-US"; // Set language to English (US)
-    window.speechSynthesis.speak(utterance);
+    // Check if Flutter WebView TTS bridge is available
+    if (window.FlutterTTS) {
+      window.FlutterTTS.postMessage(message);
+    } else {
+      // Fallback to browser-based speech synthesis
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.lang = "en-US"; // Set language to English (US)
+      window.speechSynthesis.speak(utterance);
+    }
   }
 
   async function handleRegisterUser(event) {
     event.preventDefault();
     try {
       const data = await registerService(signUpFormData);
-  
+
       if (data.success) {
         const successMessage = data.message || "Registration successful!";
         sessionStorage.setItem(
@@ -50,7 +56,6 @@ export default function AuthProvider({ children }) {
       speakMessage(errorMessage);
     }
   }
-  
 
   async function handleLoginUser(event) {
     event.preventDefault();
