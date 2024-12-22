@@ -46,7 +46,7 @@ export default function AuthProvider({ children }) {
     event.preventDefault();
     try {
       const data = await loginService(signInFormData);
-      console.log(data, "datadatadatadatadata");
+      console.log(data, "dadatadatadata");
 
       if (data.success) {
         const successMessage = data.message || "Login successful!";
