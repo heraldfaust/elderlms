@@ -131,6 +131,7 @@ function StudentViewCoursesPage() {
       <div className="flex flex-col md:flex-row gap-4">
         <aside className="w-full md:w-64 space-y-4">
           <div>
+            
             {Object.keys(filterOptions).map((ketItem) => (
               <div className="p-4 border-b">
                 <h3 className="font-bold mb-3">{ketItem.toUpperCase()}</h3>
