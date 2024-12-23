@@ -16,16 +16,24 @@ function StudentHomePage() {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Function to speak text using SpeechSynthesis API
+  // Unified Text-to-Speech Function
   const speakText = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utterance);
+    if (window.FlutterTTS) {
+      // Use Flutter's TTS
+      window.FlutterTTS.postMessage(text);
+    } else if (window.speechSynthesis) {
+      // Fallback to browser's SpeechSynthesis API
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      speechSynthesis.speak(utterance);
+    } else {
+      console.warn("Text-to-Speech is not supported in this environment.");
+    }
   };
 
   function handleNavigateToCoursesPage(getCurrentId, categoryLabel) {
     speakText(`You clicked on ${categoryLabel} category.`);
-    
-    console.log(getCurrentId);
+
     sessionStorage.removeItem("filters");
     const currentFilter = {
       category: [getCurrentId],
@@ -44,7 +52,7 @@ function StudentHomePage() {
   async function handleCourseNavigate(getCurrentCourseId, courseTitle) {
     // Announce the course title when clicked
     speakText(`You clicked on the course titled ${courseTitle}.`);
-    
+
     const response = await checkCoursePurchaseInfoService(
       getCurrentCourseId,
       auth?.user?._id
@@ -67,8 +75,10 @@ function StudentHomePage() {
     <div className="min-h-screen bg-[#F5F5DC]">
       <section className="flex flex-col lg:flex-row items-center justify-between py-8 px-4 lg:px-8">
         <div className="lg:w-2/2 lg:pr-12">
-          <h1 className="text-4xl font-bold mb-4" >Empowering Seniors with Digital Confidence</h1>
-          <p className="text-xl mb-4" >
+          <h1 className="text-4xl font-bold mb-4">
+            Empowering Seniors with Digital Confidence
+          </h1>
+          <p className="text-xl mb-4">
             Discover a simple, intuitive app designed to help older adults master essential digital skills. From online safety to social media and video calls, our app makes learning easy, accessible, and rewarding.
           </p>
         </div>
@@ -82,13 +92,15 @@ function StudentHomePage() {
       </section>
       <section className="py-8 px-4 lg:px-8 bg-[#F5F5DC]">
         <h2 className="text-2xl font-bold mb-6">Course Categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        <div className="flex flex-wrap gap-2">
           {courseCategories.map((categoryItem) => (
             <Button
-              className="justify-start hover:bg-black hover:text-[#F5F5DC]"
+              className="justify-start hover:bg-black hover:text-[#F5F5DC] flex-[1_0_45%] sm:flex-[1_0_30%] md:flex-[1_0_22%]"
               variant="outline"
               key={categoryItem.id}
-              onClick={() => handleNavigateToCoursesPage(categoryItem.id, categoryItem.label)}
+              onClick={() =>
+                handleNavigateToCoursesPage(categoryItem.id, categoryItem.label)
+              }
             >
               {categoryItem.label}
             </Button>
@@ -101,7 +113,9 @@ function StudentHomePage() {
           {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
             studentViewCoursesList.map((courseItem) => (
               <div
-                onClick={() => handleCourseNavigate(courseItem?._id, courseItem?.title)}
+                onClick={() =>
+                  handleCourseNavigate(courseItem?._id, courseItem?.title)
+                }
                 className="shadow rounded-lg overflow-hidden bg-[#ffffc2] text-black cursor-pointer"
                 key={courseItem?._id}
               >
