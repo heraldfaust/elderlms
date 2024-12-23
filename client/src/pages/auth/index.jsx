@@ -84,7 +84,7 @@ function AuthPage() {
           <span className="font-extrabold text-xl">SLM</span>
         </Link>
       </header>
-      <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="p-3 flex items-center justify-center min-h-screen bg-background">
         <Tabs
           value={activeTab}
           defaultValue="signin"

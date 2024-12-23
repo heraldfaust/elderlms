@@ -67,8 +67,8 @@ function StudentHomePage() {
     <div className="min-h-screen bg-[#F5F5DC]">
       <section className="flex flex-col lg:flex-row items-center justify-between py-8 px-4 lg:px-8">
         <div className="lg:w-2/2 lg:pr-12">
-          <h1 className="text-4xl font-bold mb-4" voice='Empowering Seniors with Digital Confidence'>Empowering Seniors with Digital Confidence</h1>
-          <p className="text-xl mb-4" voice='Discover a simple, intuitive app designed to help older adults master essential digital skills. From online safety to social media and video calls, our app makes learning easy, accessible, and rewarding.'>
+          <h1 className="text-4xl font-bold mb-4" >Empowering Seniors with Digital Confidence</h1>
+          <p className="text-xl mb-4" >
             Discover a simple, intuitive app designed to help older adults master essential digital skills. From online safety to social media and video calls, our app makes learning easy, accessible, and rewarding.
           </p>
         </div>
@@ -81,7 +81,7 @@ function StudentHomePage() {
         </div>
       </section>
       <section className="py-8 px-4 lg:px-8 bg-[#F5F5DC]">
-        <h2 className="text-2xl font-bold mb-6" voice='Course categories'>Course Categories</h2>
+        <h2 className="text-2xl font-bold mb-6">Course Categories</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {courseCategories.map((categoryItem) => (
             <Button
