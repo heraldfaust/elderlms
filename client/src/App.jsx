@@ -3,7 +3,6 @@ import AuthPage from "./pages/auth";
 import RouteGuard from "./components/route-guard";
 import { useContext } from "react";
 import { Toaster } from "react-hot-toast";
-import { ToastContainer } from 'react-toastify';
 import 'regenerator-runtime/runtime';
 import { AuthContext } from "./context/auth-context";
 import InstructorDashboardpage from "./pages/instructor";
