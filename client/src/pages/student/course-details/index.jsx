@@ -17,6 +17,7 @@ import {
   createPaymentService,
   fetchStudentViewCourseDetailsService,
 } from "@/services";
+
 import { CheckCircle, Globe, Lock, PlayCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -61,7 +62,7 @@ function StudentViewCourseDetailsPage() {
   }
 
   const config = {
-    public_key: import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY, // Replace with your Flutterwave public key
+    public_key: import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY, 
     tx_ref: `course-purchase-${Date.now()}`,
     amount: studentViewCourseDetails?.pricing || 0,
     currency: 'NGN',
@@ -79,7 +80,7 @@ function StudentViewCourseDetailsPage() {
   const handleFlutterPayment = async (response) => {
     console.log(response);
     if (response.status === 'completed') {
-      // Prepare payment payload
+
       const paymentPayload = {
         userId: auth?.user?._id,
         userName: auth?.user?.userName,
@@ -97,16 +98,15 @@ function StudentViewCourseDetailsPage() {
         coursePricing: studentViewCourseDetails?.pricing,
       };
 
-      // Call backend to verify and complete the purchase
       const verifyResponse = await createPaymentService(paymentPayload);
 
       if (verifyResponse.success) {
-        // Redirect to course progress or show success message
+
         navigate(`/course-progress/${currentCourseDetailsId}`);
       }
     }
 
-    closePaymentModal(); // Close the Flutterwave modal
+    closePaymentModal();
   };
 
   useEffect(() => {
@@ -143,22 +143,23 @@ function StudentViewCourseDetailsPage() {
           {studentViewCourseDetails?.title}
         </h1>
         <p className="text-xl mb-4">{studentViewCourseDetails?.subtitle}</p>
-        <div className="flex items-center space-x-4 mt-2 text-sm">
-          <span>Created By {studentViewCourseDetails?.instructorName}</span>
-          <span>Created On {studentViewCourseDetails?.date.split("T")[0]}</span>
-          <span className="flex items-center">
-            <Globe className="mr-1 h-4 w-4" />
-            {studentViewCourseDetails?.primaryLanguage}
-          </span>
-          <span>
-            {studentViewCourseDetails?.students.length}{" "}
-            {studentViewCourseDetails?.students.length <= 1
-              ? "Student"
-              : "Students"}
-          </span>
-        </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 mt-2 text-sm">
+  <span>Created By {studentViewCourseDetails?.instructorName}</span>
+  <span>Created On {studentViewCourseDetails?.date.split("T")[0]}</span>
+  <span className="flex items-center">
+    <Globe className="mr-1 h-4 w-4" />
+    {studentViewCourseDetails?.primaryLanguage}
+  </span>
+  <span>
+    {studentViewCourseDetails?.students.length}{" "}
+    {studentViewCourseDetails?.students.length <= 1
+      ? "Student"
+      : "Students"}
+  </span>
+</div>
+
       </div>
-      <div className="flex flex-col md:flex-row gap-8 mt-8 ">
+      <div className="flex flex-col md:flex-row gap-2 mt-8 ">
         <main className="flex-grow">
           <Card className="mb-8 bg-[#ffffc2]">
             <CardHeader>
@@ -211,43 +212,45 @@ function StudentViewCourseDetailsPage() {
                     <span>{curriculumItem?.title}</span>
                   </li>
                 )
+                
               )}
             </CardContent>
           </Card>
         </main>
-        <aside className="w-full md:w-[500px]">
-          <Card className="sticky top-4 bg-[#ffffc2]">
-            <CardContent className="p-6">
-              <div className="aspect-video mb-4 rounded-lg flex items-center justify-center">
-                <VideoPlayer
-                  url={
-                    getIndexOfFreePreviewUrl !== -1
-                      ? studentViewCourseDetails?.curriculum[
-                          getIndexOfFreePreviewUrl
-                        ].videoUrl
-                      : ""
-                  }
-                  width="450px"
-                  height="200px"
-                />
-              </div>
-              <div className="mb-4">
-                <span className="text-3xl font-bold">
-                  NGN {studentViewCourseDetails?.pricing}
-                </span>
-              </div>
-              <FlutterWaveButton
-                className="w-full bg-black py-5 text-white"
-                {...config}
-                text="Buy Now"
-                callback={handleFlutterPayment}
-                onClose={() => {
-                  // Optional: Handle modal close
-                }}
-              />
-            </CardContent>
-          </Card>
-        </aside>
+        <aside className="w-full md:w-[500px]  md:p-0">
+  <div className="md:card md:bg-[#ffffc2] md:rounded-lg md:shadow sticky top-4">
+    <div className=" md:p-6">
+      <div className="aspect-video mb-4 rounded-lg flex items-center justify-center">
+        <VideoPlayer
+          url={
+            getIndexOfFreePreviewUrl !== -1
+              ? studentViewCourseDetails?.curriculum[
+                  getIndexOfFreePreviewUrl
+                ].videoUrl
+              : ""
+          }
+          width="450px"
+          height="200px"
+        />
+      </div>
+      <div className="mb-4">
+        <span className="text-3xl font-bold">
+          NGN {studentViewCourseDetails?.pricing}
+        </span>
+      </div>
+      <FlutterWaveButton
+        className="w-full bg-black py-5 text-white"
+        {...config}
+        text="Buy Now"
+        callback={handleFlutterPayment}
+        onClose={() => {
+          // Optional: Handle modal close
+        }}
+      />
+    </div>
+  </div>
+</aside>
+
       </div>
       <Dialog
         open={showFreePreviewDialog}
