@@ -1,5 +1,5 @@
 import { courseCategories } from "@/config";
-import banner from "../../../../public/banner.jpg";
+// import banner from "../../../../public/banner.jpg";
 import { Button } from "@/components/ui/button";
 import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/student-context";
@@ -84,7 +84,7 @@ function StudentHomePage() {
         </div>
         <div className="lg:w-full mb-8 lg:mb-0">
           <img
-            src={banner}
+            src="http://res.cloudinary.com/duagx9ow9/image/upload/v1734253395/hpgu89weevbh2msi40au.png"
             className="w-[600px] h-auto rounded-lg shadow-lg"
             alt="Banner"
           />
