@@ -84,7 +84,7 @@ function StudentHomePage() {
         </div>
         <div className="lg:w-full mb-8 lg:mb-0">
           <img
-            src="http://res.cloudinary.com/duagx9ow9/image/upload/v1734253395/hpgu89weevbh2msi40au.png"
+            src="https://res.cloudinary.com/duagx9ow9/image/upload/v1734253395/hpgu89weevbh2msi40au.png"
             className="w-[600px] h-auto rounded-lg shadow-lg"
             alt="Banner"
           />
