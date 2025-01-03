@@ -29,7 +29,8 @@ function StudentViewCourseProgressPage() {
     useContext(StudentContext);
   const [lockCourse, setLockCourse] = useState(false);
   const [currentLecture, setCurrentLecture] = useState(null);
-  const [showCourseCompleteDialog, setShowCourseCompleteDialog] = useState(false);
+  const [showCourseCompleteDialog, setShowCourseCompleteDialog] =
+    useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -117,8 +118,6 @@ function StudentViewCourseProgressPage() {
 
   console.log(currentLecture, "currentLecture");
 
-
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -127,9 +126,9 @@ function StudentViewCourseProgressPage() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // ... (keep existing service functions)
@@ -137,7 +136,7 @@ function StudentViewCourseProgressPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#1c1d1f] text-white">
       {showConfetti && <Confetti />}
-      
+
       {/* Header */}
       <div className="flex items-center justify-between p-2 md:p-4 bg-[#1c1d1f] border-b border-gray-700">
         <div className="flex items-center space-x-2 md:space-x-4">
@@ -154,7 +153,7 @@ function StudentViewCourseProgressPage() {
             {studentCurrentCourseProgress?.courseDetails?.title}
           </h1>
         </div>
-        <Button 
+        <Button
           onClick={() => setIsSideBarOpen(!isSideBarOpen)}
           size="sm"
           className="p-1 md:p-2"
@@ -171,14 +170,16 @@ function StudentViewCourseProgressPage() {
 
       {/* Main Content */}
       <div className="flex flex-1 relative overflow-hidden">
-        <div className={`flex-1 transition-all duration-300 ${
-          isSideBarOpen && !isMobile ? "mr-[320px]" : ""
-        }`}>
+        <div
+          className={`flex-1 transition-all duration-300 ${
+            isSideBarOpen && !isMobile ? "mr-[320px]" : ""
+          }`}
+        >
           <div className="w-full">
             <VideoPlayer
               width="100%"
               height={isMobile ? "240px" : "500px"}
-              url={currentLecture?.videoUrl}
+              url={currentLecture?.videoUrl?.replace(/^http:\/\//, "https://")}
               onProgressUpdate={setCurrentLecture}
               progressData={currentLecture}
             />
@@ -191,43 +192,54 @@ function StudentViewCourseProgressPage() {
         </div>
 
         {/* Sidebar */}
-        <div className={`fixed top-[48px] md:top-[64px] right-0 bottom-0 w-full md:w-[320px] 
+        <div
+          className={`fixed top-[48px] md:top-[64px] right-0 bottom-0 w-full md:w-[320px] 
           bg-[#1c1d1f] border-l border-gray-700 transition-all duration-300 z-10
           ${isSideBarOpen ? "translate-x-0" : "translate-x-full"}`}
         >
           <Tabs defaultValue="content" className="h-full flex flex-col">
             <TabsList className="grid bg-[#1c1d1f] w-full grid-cols-2 p-0 h-12 md:h-14">
-              <TabsTrigger value="content" className="text-white rounded-none h-full text-sm md:text-base">
+              <TabsTrigger
+                value="content"
+                className="text-white rounded-none h-full text-sm md:text-base"
+              >
                 Course Content
               </TabsTrigger>
-              <TabsTrigger value="overview" className="text-white rounded-none h-full text-sm md:text-base">
+              <TabsTrigger
+                value="overview"
+                className="text-white rounded-none h-full text-sm md:text-base"
+              >
                 Overview
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="content" className="flex-1">
               <ScrollArea className="h-[calc(100vh-160px)]">
                 <div className="p-4 space-y-4">
-                  {studentCurrentCourseProgress?.courseDetails?.curriculum.map((item) => (
-                    <button
-                      key={item._id}
-                      onClick={() => {
-                        setCurrentLecture(item);
-                        if (isMobile) setIsSideBarOpen(false);
-                      }}
-                      className={`flex items-center space-x-2 text-sm text-white font-bold w-full text-left p-2 rounded hover:bg-gray-800 transition-colors
-                        ${currentLecture?._id === item._id ? 'bg-gray-800' : ''}`}
-                    >
-                      {studentCurrentCourseProgress?.progress?.find(
-                        (progressItem) => progressItem.lectureId === item._id
-                      )?.viewed ? (
-                        <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      ) : (
-                        <Play className="h-4 w-4 flex-shrink-0" />
-                      )}
-                      <span className="line-clamp-2">{item?.title}</span>
-                    </button>
-                  ))}
+                  {studentCurrentCourseProgress?.courseDetails?.curriculum.map(
+                    (item) => (
+                      <button
+                        key={item._id}
+                        onClick={() => {
+                          setCurrentLecture(item);
+                          if (isMobile) setIsSideBarOpen(false);
+                        }}
+                        className={`flex items-center space-x-2 text-sm text-white font-bold w-full text-left p-2 rounded hover:bg-gray-800 transition-colors
+                        ${
+                          currentLecture?._id === item._id ? "bg-gray-800" : ""
+                        }`}
+                      >
+                        {studentCurrentCourseProgress?.progress?.find(
+                          (progressItem) => progressItem.lectureId === item._id
+                        )?.viewed ? (
+                          <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <Play className="h-4 w-4 flex-shrink-0" />
+                        )}
+                        <span className="line-clamp-2">{item?.title}</span>
+                      </button>
+                    )
+                  )}
                 </div>
               </ScrollArea>
             </TabsContent>
@@ -235,7 +247,9 @@ function StudentViewCourseProgressPage() {
             <TabsContent value="overview" className="flex-1">
               <ScrollArea className="h-[calc(100vh-160px)]">
                 <div className="p-4">
-                  <h2 className="text-lg md:text-xl font-bold mb-4">About this course</h2>
+                  <h2 className="text-lg md:text-xl font-bold mb-4">
+                    About this course
+                  </h2>
                   <p className="text-gray-200 text-sm md:text-base">
                     {studentCurrentCourseProgress?.courseDetails?.description}
                   </p>
@@ -259,19 +273,22 @@ function StudentViewCourseProgressPage() {
       </Dialog>
 
       <Dialog open={showCourseCompleteDialog}>
-        <DialogContent showOverlay={false} className="sm:w-[425px] w-[90%] mx-auto">
+        <DialogContent
+          showOverlay={false}
+          className="sm:w-[425px] w-[90%] mx-auto"
+        >
           <DialogHeader>
             <DialogTitle>Congratulations!</DialogTitle>
             <DialogDescription className="flex flex-col gap-3">
               <Label>You have completed the course</Label>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
+                <Button
                   onClick={() => navigate("/student-courses")}
                   className="w-full sm:w-auto"
                 >
                   My Courses Page
                 </Button>
-                <Button 
+                <Button
                   onClick={handleRewatchCourse}
                   className="w-full sm:w-auto"
                 >
