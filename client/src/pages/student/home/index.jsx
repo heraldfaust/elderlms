@@ -1,5 +1,5 @@
 import { courseCategories } from "@/config";
-// import banner from "../../../../public/banner.jpg";
+import banner from "../../../../public/banner.jpg";
 import { Button } from "@/components/ui/button";
 import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/student-context";
@@ -84,7 +84,7 @@ function StudentHomePage() {
         </div>
         <div className="lg:w-full mb-8 lg:mb-0">
           <img
-            src="https://res.cloudinary.com/duagx9ow9/image/upload/v1734253395/hpgu89weevbh2msi40au.png"
+            src={banner}
             className="w-[600px] h-auto rounded-lg shadow-lg"
             alt="Banner"
           />
@@ -110,36 +110,37 @@ function StudentHomePage() {
       <section className="py-12 px-4 lg:px-8">
         <h2 className="text-2xl font-bold mb-6">Featured Courses</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 dark">
-          {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
-            studentViewCoursesList.map((courseItem) => (
-              <div
-                onClick={() =>
-                  handleCourseNavigate(courseItem?._id, courseItem?.title)
-                }
-                className="shadow rounded-lg overflow-hidden bg-[#ffffc2] text-black cursor-pointer"
-                key={courseItem?._id}
-              >
-                <img
-                  src={courseItem?.image}
-                  width={300}
-                  height={150}
-                  className="w-full h-40 object-cover"
-                  alt={courseItem?.title}
-                />
-                <div className="p-4">
-                  <h3 className="font-bold mb-2">{courseItem?.title}</h3>
-                  <p className="text-sm text-black mb-2">
-                    {courseItem?.instructorName}
-                  </p>
-                  <p className="font-bold text-[16px]">
-                    NGN {courseItem?.pricing}
-                  </p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <h1>No Courses Found</h1>
-          )}
+        {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
+  studentViewCoursesList.map((courseItem) => (
+    <div
+      onClick={() =>
+        handleCourseNavigate(courseItem?._id, courseItem?.title)
+      }
+      className="shadow rounded-lg overflow-hidden bg-[#ffffc2] text-black cursor-pointer"
+      key={courseItem?._id}
+    >
+      <img
+        src={courseItem?.image?.replace(/^http:\/\//, 'https://')}
+        width={300}
+        height={150}
+        className="w-full h-40 object-cover"
+        alt={courseItem?.title}
+      />
+      <div className="p-4">
+        <h3 className="font-bold mb-2">{courseItem?.title}</h3>
+        <p className="text-sm text-black mb-2">
+          {courseItem?.instructorName}
+        </p>
+        <p className="font-bold text-[16px]">
+          NGN {courseItem?.pricing}
+        </p>
+      </div>
+    </div>
+  ))
+) : (
+  <h1>No Courses Found</h1>
+)}
+
         </div>
       </section>
     </div>
