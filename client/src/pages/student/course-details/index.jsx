@@ -221,17 +221,17 @@ function StudentViewCourseDetailsPage() {
   <div className="md:card md:bg-[#ffffc2] md:rounded-lg md:shadow sticky top-4">
     <div className=" md:p-6">
       <div className="aspect-video mb-4 rounded-lg flex items-center justify-center">
-        <VideoPlayer
-          url={
-            getIndexOfFreePreviewUrl !== -1
-              ? studentViewCourseDetails?.curriculum[
-                  getIndexOfFreePreviewUrl
-                ].videoUrl
-              : ""
-          }
-          width="450px"
-          height="200px"
-        />
+      <VideoPlayer
+  url={
+    getIndexOfFreePreviewUrl !== -1
+      ? studentViewCourseDetails?.curriculum[
+          getIndexOfFreePreviewUrl
+        ].videoUrl.replace("http://", "https://")
+      : ""
+  }
+  width="450px"
+  height="200px"
+/>
       </div>
       <div className="mb-4">
         <span className="text-3xl font-bold">
@@ -264,11 +264,12 @@ function StudentViewCourseDetailsPage() {
             <DialogTitle>Course Preview</DialogTitle>
           </DialogHeader>
           <div className="aspect-video rounded-lg flex items-center justify-center">
-            <VideoPlayer
-              url={displayCurrentVideoFreePreview}
-              width="450px"
-              height="200px"
-            />
+          <VideoPlayer
+  url={displayCurrentVideoFreePreview.replace("http://", "https://")}
+  width="450px"
+  height="200px"
+/>
+
           </div>
           <div className="flex flex-col gap-2">
             {studentViewCourseDetails?.curriculum
