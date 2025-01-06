@@ -265,10 +265,15 @@ function StudentViewCourseDetailsPage() {
           </DialogHeader>
           <div className="aspect-video rounded-lg flex items-center justify-center">
           <VideoPlayer
-  url={displayCurrentVideoFreePreview.replace("http://", "https://")}
+  url={
+    displayCurrentVideoFreePreview
+      ? displayCurrentVideoFreePreview.replace("http://", "https://")
+      : ""
+  }
   width="450px"
   height="200px"
 />
+
 
           </div>
           <div className="flex flex-col gap-2">
